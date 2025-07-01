@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"math"
 
@@ -13,7 +14,11 @@ func main() {
 	fmt.Println("*** BMI Calculator ***")
 	for {
 		userWeight, userHeight := getUserInput()
-		BMI := calculateBMI(userWeight, userHeight)
+		BMI, err := calculateBMI(userWeight, userHeight)
+		if err != nil {
+			color.Red("Error! Data cannot be equal to or less than zero")
+			continue
+		}
 		outputResult(BMI)
 		userRepeatCalculation := userRepeatCalculation()
 		if !userRepeatCalculation {
@@ -32,9 +37,12 @@ func getUserInput() (float64, float64) {
 	return userWeight, userHeight
 }
 
-func calculateBMI(userWeight float64, userHeight float64) float64 {
+func calculateBMI(userWeight float64, userHeight float64) (float64, error) {
+	if userWeight <= 0 || userHeight <= 0 {
+		return 0.0, errors.New("INVALID_DATA")
+	}
 	BMI := userWeight / math.Pow(userHeight/100, BMIPower)
-	return BMI
+	return BMI, nil
 }
 
 func outputResult(BMI float64) {
